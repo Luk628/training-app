@@ -1,6 +1,6 @@
 // Cache only static assets; always prefer the latest online version.
 // User workout data lives in localStorage and is never touched here.
-const CACHE = 'training-app-static-v20261011-1';
+const CACHE = 'training-app-static-v20261012-1';
 const STATIC = ['./index.html', './data.js', './manifest.webmanifest', './icon.png'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {

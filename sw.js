@@ -1,48 +1,5 @@
-// Cache only static assets; always prefer the latest online version.
-// User workout data lives in localStorage and is never touched here.
-const CACHE = 'training-app-static-v20261012-1';
-const STATIC = ['./index.html', './data.js', './manifest.webmanifest', './icon.png'];
-self.addEventListener('install', event => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE);
-    await Promise.all(STATIC.map(async path => {
-      try {
-        const request = new Request(path, {cache: 'reload'});
-        const response = await fetch(request);
-        if (response.ok) await cache.put(path, response);
-      } catch (_) { /* Offline installation can still proceed. */ }
-    }));
-    await self.skipWaiting();
-  })());
-});
-self.addEventListener('activate', event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(key =>
-      key !== CACHE && (key.startsWith('training-') || key.startsWith('training-app-'))
-    ).map(key => caches.delete(key)));
-    await self.clients.claim();
-  })());
-});
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
-  event.respondWith((async () => {
-    try {
-      const response = await fetch(request, {cache: 'no-store'});
-      if (response.ok) {
-        const cache = await caches.open(CACHE);
-        await cache.put(request, response.clone());
-      }
-      return response;
-    } catch (error) {
-      const cached = await caches.match(request);
-      if (cached) return cached;
-      if (request.mode === 'navigate') {
-        const fallback = await caches.match('./index.html');
-        if (fallback) return fallback;
-      }
-      throw error;
-    }
-  })());
-});
+const CACHE='training-app-static-v20261014-2';
+const STATIC=['./index.html','./data.js','./manifest.webmanifest','./icon.png'];
+self.addEventListener('install',event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE);await Promise.all(STATIC.map(async path=>{try{const r=await fetch(new Request(path,{cache:'reload'}));if(r.ok)await c.put(path,r)}catch(_){}}));await self.skipWaiting()})())});
+self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k!==CACHE&&(k.startsWith('training-')||k.startsWith('training-app-'))).map(k=>caches.delete(k)));await self.clients.claim()})())});
+self.addEventListener('fetch',event=>{const r=event.request;if(r.method!=='GET'||new URL(r.url).origin!==self.location.origin)return;event.respondWith((async()=>{try{const response=await fetch(r,{cache:'no-store'});if(response.ok){const c=await caches.open(CACHE);await c.put(r,response.clone())}return response}catch(e){const cached=await caches.match(r);if(cached)return cached;if(r.mode==='navigate'){const fallback=await caches.match('./index.html');if(fallback)return fallback}throw e}})())});

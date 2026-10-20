@@ -1,4 +1,4 @@
-const CACHE='training-app-static-v20261014-3';
+const CACHE='training-app-static-v20261020-2';
 const STATIC=['./index.html','./data.js','./manifest.webmanifest','./icon.png'];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE);await Promise.all(STATIC.map(async path=>{try{const r=await fetch(new Request(path,{cache:'reload'}));if(r.ok)await c.put(path,r)}catch(_){}}));await self.skipWaiting()})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k!==CACHE&&(k.startsWith('training-')||k.startsWith('training-app-'))).map(k=>caches.delete(k)));await self.clients.claim()})())});
